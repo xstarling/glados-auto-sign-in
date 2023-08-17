@@ -2,7 +2,7 @@
 """
 Created on Tue Aug 15 09:32:25 2023
 
-@author: starling
+@author: 86130
 """
 
 import time
@@ -20,6 +20,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 optsEdge = webdriver.EdgeOptions()
 import json
 from tkinter import *
+import traceback
 
 from selenium.webdriver.common.keys import Keys
 
@@ -30,6 +31,9 @@ wait = None;
 
 def auto_web_glados_sign_in(url):
     global wait;
+
+    datetimelog = time.strftime("%Y{0}%m{0}%d{0}%H{0}%M{0}%S".format('_'), time.localtime(time.time())) + '\n\n开启今日签到任务\n\n';
+    print(datetimelog,file=log_file);
     #edgedriver = "C:\Program Files (x86)\Microsoft\Edge\Application"
     #os.environ["webdriver.ie.driver"] = chromedriver
 
@@ -139,8 +143,10 @@ def sign_in(driver):
             # 等待---会员签到按钮       
             wait.until(lambda driver: driver.find_element(By.XPATH, '/html/body/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div'))
             driver.find_element(By.XPATH, '/html/body/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div').click(); 
-        except Exception:
-            pass
+        except Exception as e:
+            s = traceback.format_exc()
+            print(s,file=log_file);
+            log_file.flush();  
     
         print("点击签到等待3s\n",file=log_file)
         time.sleep(3);
@@ -151,7 +157,10 @@ def sign_in(driver):
             wait.until(lambda driver: driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/div[2]/div/div[2]/button'))
             driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/div[2]/div/div[2]/button').click();
         except Exception:
-            pass
+            s = traceback.format_exc()
+            print(s,file=log_file);
+            log_file.flush();  
+    
          
         # 等待延时加载浏览页面  
         time.sleep(3);
@@ -178,8 +187,10 @@ def login_cookie(driver,url):
             try:
                 driver.add_cookie(cookie);
             except Exception as e:                
-                print(e,file=log_file);
-                log_file.flush();            
+                s = traceback.format_exc()
+                print(s,file=log_file);
+                log_file.flush();  
+                
             
         driver.get(url)  # 这个是再次刷新这不不可少
         
@@ -216,7 +227,8 @@ def clean():
        if log_file is not None:
             log_file.close(); 
     except Exception as e:
-        print(e,file=log_file);
+        s = traceback.format_exc()
+        print(s,file=log_file);
         log_file.flush();
        
     
@@ -228,13 +240,15 @@ def star_task():
     try:
         log_file = open("logs/"+time.strftime("%Y{0}%m{0}%d{0}%H{0}%M{0}%S".format('_'), time.localtime(time.time())) + '.log', 'w');
     except Exception as e:
-        print(e,file=log_file);
+        s = traceback.format_exc()
+        print(s,file=log_file);
         log_file.flush();
         try:
             if log_file is not None:
                 log_file.close(); 
         except Exception as e:
-            print(e,file=log_file);
+            s = traceback.format_exc()
+            print(s,file=log_file);
             log_file.flush();
         exit(0);
          
@@ -248,7 +262,8 @@ def star_task():
                 if log_file is not None:
                     log_file.close();
             except Exception as e:
-                print(e,file=log_file);
+                s = traceback.format_exc()
+                print(s,file=log_file);
                 log_file.flush();
             exit(0);
             
@@ -267,7 +282,8 @@ def star_task():
             #print("wait...\n",file=log_file);
             log_file.flush();
     except Exception as e:        
-        print(e,file=log_file);
+        s = traceback.format_exc()
+        print(s,file=log_file);
         log_file.flush();
     finally:
         print("程序手动终止\n",file=log_file);
@@ -278,7 +294,8 @@ def star_task():
             if log_file is not None:
                 log_file.close();
         except Exception as e:            
-            print(e,file=log_file);
+            s = traceback.format_exc()
+            print(s,file=log_file);
             log_file.flush();
             
 if __name__ == "__main__":
