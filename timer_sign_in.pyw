@@ -16,8 +16,9 @@ from selenium.common.exceptions import NoAlertPresentException
 import selenium.webdriver.support.ui as ui
 import traceback
 from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.service import Service as edgeService
+from selenium.webdriver.chrome.service import Service as chromeSerivce
 from selenium.webdriver.common.action_chains import ActionChains
-optsEdge = webdriver.EdgeOptions()
 import json
 from tkinter import *
 import traceback
@@ -36,27 +37,55 @@ def auto_web_glados_sign_in(url):
     print(datetimelog,file=log_file);
     #edgedriver = "C:\Program Files (x86)\Microsoft\Edge\Application"
     #os.environ["webdriver.ie.driver"] = chromedriver
-
-    #driver = webdriver.Edge(executable_path='msedge.exe')  # 选择Chrome浏览器
-    driver = webdriver.Edge(options=optsEdge);   
-    driver.minimize_window() # 最小化浏览器
-    #driver.maximize_window()  # 最大化谷歌浏览器
-    time.sleep(1)
+    try:
+        #driver = webdriver.Edge(executable_path='msedge.exe')  # 选择Chrome浏览器
+        if str(propertydata["showbrowser"]).lower().strip() == "false":                
+            optsEdge = webdriver.EdgeOptions();
+            optsEdge.add_argument('headless'); # 设置静脉不弹出浏览器 
+            
+            optsChrome = webdriver.ChromeOptions();
+            optsChrome.add_argument('headless'); # 设置静脉不弹出浏览器
+            
+            kwargs = {"popen_kw":{"creation_flags":134217728}}; # 设置静脉不弹出黑框框 
+            serviceEdge = edgeService(**kwargs);
+            serviceChrome = chromeSerivce(**kwargs);
+        elif str(propertydata["showbrowser"]).lower().strip() == "true":
+            serviceEdge = edgeService();
+            serviceChrome = chromeSerivce();
+            
+            optsEdge = webdriver.EdgeOptions();
+            optsChrome = webdriver.ChromeOptions();
+            
+        if str(propertydata['browser']).lower().strip() == "edge":   
+            driver = webdriver.Edge(service=serviceEdge,options=optsEdge);   
+            
+        elif str(propertydata['browser']).lower().strip() == 'chrome':       
+            driver = webdriver.Chrome(service=serviceChrome,options=optsChrome);   
+ 
+        driver.minimize_window() # 最小化浏览器
+        #driver.maximize_window()  # 最大化谷歌浏览器
+        time.sleep(1)
+        
+        # 页面等待加载---超时时间设定为180s
+        timeout = propertydata['timeout'];
+        wait = ui.WebDriverWait(driver,timeout);        
+        
+        if login_cookie(driver, url): 
+            print("登录成功\n\n",file=log_file);
+        else:
+            login_glados_user(driver,url);
     
-    # 页面等待加载---超时时间设定为180s
-    timeout = propertydata['timeout'];
-    wait = ui.WebDriverWait(driver,timeout);        
+        
+        print("自动签到已完成\n\n\n",file=log_file);
+        
+        # 数据刷入硬盘
+        log_file.flush();
+    except Exception as e:
+        print("请检查网络连接或防火墙配置\n\n\n",file=log_file);
+        s = traceback.format_exc()
+        print(s,file=log_file);
+        log_file.flush(); 
     
-    if login_cookie(driver, url): 
-        print("登录成功\n\n",file=log_file);
-    else:
-        login_glados_user(driver,url);
-   
-    
-    print("自动签到已完成\n\n\n",file=log_file);
-    
-    # 数据刷入硬盘
-    log_file.flush();
     return 0
 
 def login_glados_user(driver,url):  # 登录方法分装
@@ -299,5 +328,19 @@ def star_task():
             log_file.flush();
             
 if __name__ == "__main__":
-    star_task();
-    
+    #star_task();
+    # 加载json配置文件，读取用户属性配置
+    with open('config/property.json', 'r') as f:
+        propertydata = json.load(f);
+        if (len(propertydata['url'])==0) or (len(propertydata['email'])==0) or (len(propertydata['time'])==0):
+            print("请在‘config/property.json’文件中配置相关信息\n",file=log_file);
+            log_file.flush();
+            try:
+                if log_file is not None:
+                    log_file.close();
+            except Exception as e:
+                s = traceback.format_exc()
+                print(s,file=log_file);
+                log_file.flush();
+            exit(0);
+    auto_web_glados_sign_in("https://glados.rocks/console")

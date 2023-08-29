@@ -1,6 +1,8 @@
 {
     "email":"xxxxx@xx.com",
     "url":"https://glados.rocks/console/checkin",
-    "time":"09:30",
-    "timeout":10
+    "time":"10:24",
+    "timeout":10,
+    "showbrowser":false,
+    "browser":"chrome"
 }
