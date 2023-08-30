@@ -328,19 +328,4 @@ def star_task():
             log_file.flush();
             
 if __name__ == "__main__":
-    #star_task();
-    # 加载json配置文件，读取用户属性配置
-    with open('config/property.json', 'r') as f:
-        propertydata = json.load(f);
-        if (len(propertydata['url'])==0) or (len(propertydata['email'])==0) or (len(propertydata['time'])==0):
-            print("请在‘config/property.json’文件中配置相关信息\n",file=log_file);
-            log_file.flush();
-            try:
-                if log_file is not None:
-                    log_file.close();
-            except Exception as e:
-                s = traceback.format_exc()
-                print(s,file=log_file);
-                log_file.flush();
-            exit(0);
-    auto_web_glados_sign_in("https://glados.rocks/console")
+    star_task();
