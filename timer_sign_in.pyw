@@ -177,14 +177,19 @@ def sign_in(driver):
             print(s,file=log_file);
             log_file.flush();  
     
-        print("点击签到等待3s\n",file=log_file)
-        time.sleep(3);
-        print("点击签到\n",file=log_file)
+        print("开始点击签到\n\n",file=log_file)
         # 点击-签到        
         try:
             # 等待---签到按钮
             wait.until(lambda driver: driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/div[2]/div/div[2]/button'))
             driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/div[2]/div/div[2]/button').click();
+            
+            
+            print("点击签到成功返回结果如下：\n",file=log_file)
+            wait.until(lambda driver: driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/div[2]/div/div[1]/div/div'))
+            res = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/div[2]/div/div[1]/div/div');
+            print(res.text,file=log_file)
+            
         except Exception:
             s = traceback.format_exc()
             print(s,file=log_file);
